@@ -1,0 +1,20 @@
+{
+  "name": "mess-in-out-management-system",
+  "version": "1.0.0",
+  "description": "Web-based Mess In/Out Management System for meal attendance, feedback, workers, billing, and reports.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,799 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);min-height:100vh}
+.app{min-height:100vh}
+.screen{display:none}
+.screen.active{display:block}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.login-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-xl);padding:2.5rem;width:100%;max-width:420px}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
+.logo-icon{width:40px;height:40px;border-radius:10px;background:#1D9E75;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:22px;height:22px;fill:white}
+.logo-text{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.logo-sub{font-size:12px;color:var(--color-text-secondary)}
+.login-title{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.login-sub{font-size:14px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.role-btn{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:14px 8px;cursor:pointer;background:var(--color-background-primary);text-align:center;transition:all 0.15s}
+.role-btn:hover{background:var(--color-background-secondary)}
+.role-btn.selected{border:1.5px solid #1D9E75;background:#E1F5EE}
+.role-btn .ri{font-size:22px;margin-bottom:6px}
+.role-btn .rl{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.form-group{margin-bottom:1rem}
+.form-label{font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:14px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.form-input:focus{outline:none;border-color:#1D9E75}
+.login-btn{width:100%;padding:12px;background:#1D9E75;color:white;border:none;border-radius:var(--border-radius-md);font-size:15px;font-weight:500;cursor:pointer;margin-top:0.5rem}
+.login-btn:hover{background:#0F6E56}
+.err-msg{font-size:13px;color:#D85A30;margin-top:0.5rem;text-align:center}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);padding:0;display:flex;flex-direction:column}
+.sidebar-logo{padding:1.5rem 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.sidebar-logo-row{display:flex;align-items:center;gap:8px}
+.sidebar-logo-icon{width:32px;height:32px;border-radius:8px;background:#1D9E75;display:flex;align-items:center;justify-content:center}
+.sidebar-logo-icon svg{width:16px;height:16px;fill:white}
+.sidebar-logo-text{font-size:15px;font-weight:500;color:var(--color-text-primary)}
+.sidebar-logo-sub{font-size:11px;color:var(--color-text-secondary)}
+.sidebar-nav{padding:1rem 0;flex:1}
+.nav-section{padding:0 0.75rem;margin-bottom:0.25rem}
+.nav-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:0.04em;padding:0.5rem 0.5rem 0.25rem;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--border-radius-md);cursor:pointer;font-size:14px;color:var(--color-text-secondary);margin-bottom:2px;transition:all 0.1s}
+.nav-item:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.nav-item.active{background:#E1F5EE;color:#0F6E56;font-weight:500}
+.nav-item .ni{font-size:16px;width:20px;text-align:center}
+.sidebar-user{padding:1rem 1.25rem;border-top:0.5px solid var(--color-border-tertiary)}
+.user-row{display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500}
+.av-green{background:#E1F5EE;color:#0F6E56}
+.av-blue{background:#E6F1FB;color:#185FA5}
+.av-amber{background:#FAEEDA;color:#854F0B}
+.user-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.user-role{font-size:11px;color:var(--color-text-secondary)}
+.logout-btn{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:16px;padding:4px}
+.logout-btn:hover{color:var(--color-text-primary)}
+
+/* MAIN CONTENT */
+.main-content{padding:2rem;overflow-y:auto;background:var(--color-background-tertiary)}
+.page{display:none}
+.page.active{display:block}
+.page-header{margin-bottom:1.5rem}
+.page-title{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.page-sub{font-size:14px;color:var(--color-text-secondary);margin-top:4px}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem}
+.stat-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:500;color:var(--color-text-primary)}
+.stat-sub{font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.stat-green .stat-val{color:#0F6E56}
+.stat-amber .stat-val{color:#854F0B}
+.stat-blue .stat-val{color:#185FA5}
+.stat-red .stat-val{color:#993C1D}
+
+/* CARDS */
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:1rem}
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+
+/* IN/OUT TOGGLE - STUDENT ONLY */
+.inout-hero{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;margin-bottom:1rem}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;margin-bottom:1rem}
+.status-in{background:#E1F5EE;color:#0F6E56}
+.status-out{background:#FAECE7;color:#993C1D}
+.status-dot{width:8px;height:8px;border-radius:50%}
+.dot-in{background:#1D9E75}
+.dot-out{background:#D85A30}
+.inout-name{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.inout-time{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.inout-toggle{padding:14px 40px;border:none;border-radius:var(--border-radius-md);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.btn-checkin{background:#1D9E75;color:white}
+.btn-checkin:hover{background:#0F6E56}
+.btn-checkout{background:#D85A30;color:white}
+.btn-checkout:hover{background:#993C1D}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);letter-spacing:0.03em;text-transform:uppercase}
+td{padding:10px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--color-background-secondary)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-in{background:#E1F5EE;color:#085041}
+.badge-out{background:#FAECE7;color:#4A1B0C}
+.badge-present{background:#E6F1FB;color:#0C447C}
+.badge-absent{background:#F1EFE8;color:#5F5E5A}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);transition:all 0.1s}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-primary{background:#1D9E75;color:white;border:none}
+.btn-primary:hover{background:#0F6E56}
+.btn-danger{background:#D85A30;color:white;border:none}
+.btn-danger:hover{background:#993C1D}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* WORKERS VIEW */
+.student-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.student-tile{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:1rem;text-align:center}
+.student-tile.in-mess{border-color:#5DCAA5}
+.stile-avatar{width:40px;height:40px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500}
+.stile-name{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.stile-id{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px}
+
+/* ANNOUNCEMENT */
+.announce{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:1rem;font-size:13px;color:#085041}
+.announce strong{font-weight:500}
+
+/* FORM ROW */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-inline{display:flex;gap:10px;align-items:flex-end;margin-bottom:1rem}
+.form-inline .form-group{margin-bottom:0;flex:1}
+select.form-input{cursor:pointer}
+</style>
+
+<div class="app" id="app">
+
+<!-- LOGIN SCREEN -->
+<div class="screen active" id="login-screen">
+<div class="login-wrap">
+<div class="login-card">
+  <div class="logo-row">
+    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+    <div><div class="logo-text">MealsTrack</div><div class="logo-sub">Mess IN/OUT System</div></div>
+  </div>
+  <div class="login-title">Welcome back</div>
+  <div class="login-sub">Select your role to continue</div>
+  <div class="role-grid">
+    <div class="role-btn" data-role="student" onclick="selectRole('student',this)">
+      <div class="ri">🎓</div><div class="rl">Student</div>
+    </div>
+    <div class="role-btn" data-role="worker" onclick="selectRole('worker',this)">
+      <div class="ri">👨‍🍳</div><div class="rl">Worker</div>
+    </div>
+    <div class="role-btn" data-role="admin" onclick="selectRole('admin',this)">
+      <div class="ri">🛡️</div><div class="rl">Admin</div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Username / ID</label>
+    <input class="form-input" id="login-user" placeholder="Enter your ID or username" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="login-pass" placeholder="Enter password" />
+  </div>
+  <button class="login-btn" onclick="doLogin()">Sign In</button>
+  <div class="err-msg" id="login-err" style="display:none">Invalid credentials. Try: student1 / worker1 / admin1 with pass: 1234</div>
+  <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:1rem;text-align:center">Demo: use any role + ID "student1","worker1","admin1" + pass "1234"</div>
+</div>
+</div>
+</div>
+
+<!-- STUDENT DASHBOARD -->
+<div class="screen" id="student-screen">
+<div class="layout">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-row">
+      <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+      <div><div class="sidebar-logo-text">MealsTrack</div><div class="sidebar-logo-sub">Student Portal</div></div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Mess</div>
+      <div class="nav-item active" onclick="showPage('s-inout',this)"><span class="ni">🏠</span> Check In / Out</div>
+      <div class="nav-item" onclick="showPage('s-history',this)"><span class="ni">📋</span> My History</div>
+      <div class="nav-item" onclick="showPage('s-menu',this)"><span class="ni">🍽️</span> Today's Menu</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <div class="nav-item" onclick="showPage('s-profile',this)"><span class="ni">👤</span> My Profile</div>
+    </div>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-row">
+      <div class="avatar av-green" id="s-avatar">ST</div>
+      <div><div class="user-name" id="s-username">Student</div><div class="user-role">Student</div></div>
+      <button class="logout-btn" onclick="logout()" title="Logout">⬡</button>
+    </div>
+  </div>
+</div>
+<div class="main-content">
+
+  <!-- CHECK IN/OUT PAGE -->
+  <div class="page active" id="s-inout">
+    <div class="page-header">
+      <div class="page-title">Mess Check In / Out</div>
+      <div class="page-sub">Mark your presence for today's meals</div>
+    </div>
+    <div class="inout-hero">
+      <div class="status-badge" id="s-status-badge"><span class="status-dot dot-out"></span> Currently Out</div>
+      <div class="inout-name" id="s-inout-name">Student</div>
+      <div class="inout-time" id="s-inout-time">Last action: — </div>
+      <button class="inout-toggle btn-checkin" id="s-toggle-btn" onclick="toggleInOut()">Check In to Mess</button>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Today's Meals</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+            <span style="color:var(--color-text-secondary)">Breakfast (7–9 AM)</span>
+            <span class="badge badge-in" id="meal-b">Attended</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+            <span style="color:var(--color-text-secondary)">Lunch (12–2 PM)</span>
+            <span class="badge badge-absent" id="meal-l">Missed</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+            <span style="color:var(--color-text-secondary)">Dinner (7–9 PM)</span>
+            <span class="badge badge-absent" id="meal-d">Upcoming</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">This Week</div>
+        <div class="stats-row" style="grid-template-columns:1fr 1fr;margin-bottom:0">
+          <div class="stat-card stat-green"><div class="stat-label">Attended</div><div class="stat-val">14</div></div>
+          <div class="stat-card stat-red"><div class="stat-label">Missed</div><div class="stat-val">4</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="s-history">
+    <div class="page-header">
+      <div class="page-title">My Attendance History</div>
+      <div class="page-sub">Your complete meal check-in records</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card stat-green"><div class="stat-label">Total Check-ins</div><div class="stat-val">47</div></div>
+      <div class="stat-card stat-amber"><div class="stat-label">This Month</div><div class="stat-val">18</div></div>
+      <div class="stat-card stat-blue"><div class="stat-label">Attendance %</div><div class="stat-val">82%</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent Records</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Meal</th><th>Check In</th><th>Check Out</th><th>Duration</th></tr></thead>
+          <tbody id="s-hist-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU PAGE -->
+  <div class="page" id="s-menu">
+    <div class="page-header">
+      <div class="page-title">Today's Menu</div>
+      <div class="page-sub" id="menu-date-sub">Friday, May 1, 2026</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">🌅 Breakfast (7:00 – 9:00 AM)</div>
+        <ul style="list-style:none;font-size:13px;display:flex;flex-direction:column;gap:8px">
+          <li style="color:var(--color-text-primary)">Paratha with Achar</li>
+          <li style="color:var(--color-text-primary)">Halwa Puri</li>
+          <li style="color:var(--color-text-primary)">Chai / Tea</li>
+          <li style="color:var(--color-text-secondary);font-size:12px">Boiled Eggs (optional)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">☀️ Lunch (12:00 – 2:00 PM)</div>
+        <ul style="list-style:none;font-size:13px;display:flex;flex-direction:column;gap:8px">
+          <li style="color:var(--color-text-primary)">Chicken Karahi</li>
+          <li style="color:var(--color-text-primary)">Daal Chawal</li>
+          <li style="color:var(--color-text-primary)">Raita + Salad</li>
+          <li style="color:var(--color-text-secondary);font-size:12px">Roti (unlimited)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🌙 Dinner (7:00 – 9:00 PM)</div>
+        <ul style="list-style:none;font-size:13px;display:flex;flex-direction:column;gap:8px">
+          <li style="color:var(--color-text-primary)">Beef Qorma</li>
+          <li style="color:var(--color-text-primary)">Mixed Vegetable</li>
+          <li style="color:var(--color-text-primary)">Kheer (dessert)</li>
+          <li style="color:var(--color-text-secondary);font-size:12px">Roti + Rice</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">📢 Notice</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6">
+          Friday special dinner will be served at 7:30 PM. Students are requested to carry their mess cards. No entry without registration.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="s-profile">
+    <div class="page-header">
+      <div class="page-title">My Profile</div>
+      <div class="page-sub">Your account information</div>
+    </div>
+    <div class="card" style="max-width:480px">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <div class="avatar av-green" style="width:56px;height:56px;font-size:18px" id="sp-avatar">ST</div>
+        <div>
+          <div style="font-size:17px;font-weight:500;color:var(--color-text-primary)" id="sp-name">Student</div>
+          <div style="font-size:13px;color:var(--color-text-secondary)">Registered Student</div>
+        </div>
+      </div>
+      <table style="width:100%;font-size:13px">
+        <tr><td style="color:var(--color-text-secondary);padding:8px 0;width:40%">Student ID</td><td style="font-weight:500;color:var(--color-text-primary)" id="sp-id">S-001</td></tr>
+        <tr><td style="color:var(--color-text-secondary);padding:8px 0">Department</td><td style="font-weight:500;color:var(--color-text-primary)">Computer Science</td></tr>
+        <tr><td style="color:var(--color-text-secondary);padding:8px 0">Room No.</td><td style="font-weight:500;color:var(--color-text-primary)">Block-C, 204</td></tr>
+        <tr><td style="color:var(--color-text-secondary);padding:8px 0">Mess Plan</td><td><span class="badge badge-in">Full Month</span></td></tr>
+        <tr><td style="color:var(--color-text-secondary);padding:8px 0">Valid Until</td><td style="font-weight:500;color:var(--color-text-primary)">June 30, 2026</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- WORKER DASHBOARD -->
+<div class="screen" id="worker-screen">
+<div class="layout">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-row">
+      <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+      <div><div class="sidebar-logo-text">MealsTrack</div><div class="sidebar-logo-sub">Kitchen Portal</div></div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Operations</div>
+      <div class="nav-item active" onclick="showPage('w-live',this)"><span class="ni">📡</span> Live Headcount</div>
+      <div class="nav-item" onclick="showPage('w-meals',this)"><span class="ni">🍲</span> Meal Service</div>
+      <div class="nav-item" onclick="showPage('w-report',this)"><span class="ni">📊</span> Daily Report</div>
+    </div>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-row">
+      <div class="avatar av-amber" id="w-avatar">WK</div>
+      <div><div class="user-name" id="w-username">Worker</div><div class="user-role">Kitchen Staff</div></div>
+      <button class="logout-btn" onclick="logout()" title="Logout">⬡</button>
+    </div>
+  </div>
+</div>
+<div class="main-content">
+
+  <!-- LIVE HEADCOUNT -->
+  <div class="page active" id="w-live">
+    <div class="page-header">
+      <div class="page-title">Live Headcount</div>
+      <div class="page-sub">Students currently checked in to the mess</div>
+    </div>
+    <div class="announce"><strong>Note:</strong> Check-in/out is for students only. Your role is to view and manage meal service.</div>
+    <div class="stats-row">
+      <div class="stat-card stat-green"><div class="stat-label">Currently In</div><div class="stat-val" id="w-count-in">7</div></div>
+      <div class="stat-card"><div class="stat-label">Expected Today</div><div class="stat-val">42</div></div>
+      <div class="stat-card stat-amber"><div class="stat-label">Served So Far</div><div class="stat-val" id="w-served">31</div></div>
+      <div class="stat-card stat-blue"><div class="stat-label">Pending</div><div class="stat-val" id="w-pending">11</div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="card-title" style="margin-bottom:0">Students Currently In Mess</div>
+        <span class="badge badge-in">Live</span>
+      </div>
+      <div class="student-grid" id="w-student-grid"></div>
+    </div>
+  </div>
+
+  <!-- MEAL SERVICE -->
+  <div class="page" id="w-meals">
+    <div class="page-header">
+      <div class="page-title">Meal Service</div>
+      <div class="page-sub">Track portions and mark meals as served</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Breakfast Status</div>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Expected</span><span>42</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Served</span><span style="color:#0F6E56;font-weight:500">38</span></div>
+          <div style="height:6px;background:var(--color-background-secondary);border-radius:3px"><div style="height:6px;background:#1D9E75;border-radius:3px;width:90%"></div></div>
+          <span class="badge badge-in" style="align-self:flex-start">Complete</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Lunch Status</div>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Expected</span><span>42</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Served</span><span style="color:#854F0B;font-weight:500">24</span></div>
+          <div style="height:6px;background:var(--color-background-secondary);border-radius:3px"><div style="height:6px;background:#EF9F27;border-radius:3px;width:57%"></div></div>
+          <span class="badge badge-absent" style="align-self:flex-start">In Progress</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Quick Portion Notes</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label class="form-label">Roti Count (bundles)</label><input class="form-input" type="number" value="8" /></div>
+        <div class="form-group"><label class="form-label">Vegetable Portions</label><input class="form-input" type="number" value="45" /></div>
+        <div class="form-group"><label class="form-label">Curry Pots (litres)</label><input class="form-input" type="number" value="12" /></div>
+        <div class="form-group"><label class="form-label">Rice (kg)</label><input class="form-input" type="number" value="6" /></div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:0.5rem">Save Notes</button>
+    </div>
+  </div>
+
+  <!-- DAILY REPORT -->
+  <div class="page" id="w-report">
+    <div class="page-header">
+      <div class="page-title">Daily Report</div>
+      <div class="page-sub">Summary of today's meal operations</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card stat-green"><div class="stat-label">Total Served</div><div class="stat-val">62</div></div>
+      <div class="stat-card stat-blue"><div class="stat-label">Breakfast</div><div class="stat-val">22</div></div>
+      <div class="stat-card stat-amber"><div class="stat-label">Lunch</div><div class="stat-val">24</div></div>
+      <div class="stat-card"><div class="stat-label">Dinner (est.)</div><div class="stat-val">16</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Meal Breakdown — May 1</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Meal</th><th>Time Slot</th><th>Students In</th><th>Served</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Breakfast</td><td>7:00 – 9:00 AM</td><td>22</td><td>22</td><td><span class="badge badge-in">Done</span></td></tr>
+            <tr><td>Lunch</td><td>12:00 – 2:00 PM</td><td>24</td><td>24</td><td><span class="badge badge-in">Done</span></td></tr>
+            <tr><td>Dinner</td><td>7:00 – 9:00 PM</td><td>—</td><td>—</td><td><span class="badge badge-absent">Upcoming</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="screen" id="admin-screen">
+<div class="layout">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-row">
+      <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+      <div><div class="sidebar-logo-text">MealsTrack</div><div class="sidebar-logo-sub">Admin Console</div></div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <div class="nav-item active" onclick="showPage('a-dash',this)"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showPage('a-attendance',this)"><span class="ni">📋</span> Attendance Log</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Management</div>
+      <div class="nav-item" onclick="showPage('a-students',this)"><span class="ni">🎓</span> Students</div>
+      <div class="nav-item" onclick="showPage('a-workers',this)"><span class="ni">👨‍🍳</span> Workers</div>
+      <div class="nav-item" onclick="showPage('a-menu',this)"><span class="ni">🍽️</span> Menu Manager</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">System</div>
+      <div class="nav-item" onclick="showPage('a-settings',this)"><span class="ni">⚙️</span> Settings</div>
+    </div>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-row">
+      <div class="avatar av-blue" id="a-avatar">AD</div>
+      <div><div class="user-name" id="a-username">Admin</div><div class="user-role">Administrator</div></div>
+      <button class="logout-btn" onclick="logout()" title="Logout">⬡</button>
+    </div>
+  </div>
+</div>
+<div class="main-content">
+
+  <!-- ADMIN DASHBOARD -->
+  <div class="page active" id="a-dash">
+    <div class="page-header">
+      <div class="page-title">Admin Dashboard</div>
+      <div class="page-sub">System overview — Friday, May 1, 2026</div>
+    </div>
+    <div class="announce"><strong>Reminder:</strong> Check-in/out is restricted to students only. Admins manage users, menus, and reports.</div>
+    <div class="stats-row">
+      <div class="stat-card stat-green"><div class="stat-label">Students In Now</div><div class="stat-val">7</div><div class="stat-sub">of 42 registered</div></div>
+      <div class="stat-card stat-blue"><div class="stat-label">Total Students</div><div class="stat-val">42</div></div>
+      <div class="stat-card stat-amber"><div class="stat-label">Active Workers</div><div class="stat-val">6</div></div>
+      <div class="stat-card"><div class="stat-label">Today's Meals</div><div class="stat-val">46</div><div class="stat-sub">served total</div></div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">Today's Attendance</div>
+        <div style="font-size:13px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Breakfast</span><span style="font-weight:500">22 / 42</span></div>
+          <div style="height:5px;background:var(--color-background-secondary);border-radius:3px"><div style="height:5px;background:#1D9E75;border-radius:3px;width:52%"></div></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Lunch</span><span style="font-weight:500">24 / 42</span></div>
+          <div style="height:5px;background:var(--color-background-secondary);border-radius:3px"><div style="height:5px;background:#EF9F27;border-radius:3px;width:57%"></div></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-secondary)">Dinner</span><span style="font-weight:500">— / 42</span></div>
+          <div style="height:5px;background:var(--color-background-secondary);border-radius:3px"><div style="height:5px;background:#B4B2A9;border-radius:3px;width:0%"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Weekly Trend</div>
+        <div style="display:flex;align-items:flex-end;gap:8px;height:80px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="flex:1;background:#1D9E75;width:100%;border-radius:2px;min-height:20px;max-height:80px" style="height:65%"></div><span style="font-size:10px;color:var(--color-text-secondary)">Mon</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="height:70%;background:#1D9E75;width:100%;border-radius:2px"></div><span style="font-size:10px;color:var(--color-text-secondary)">Tue</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="height:55%;background:#5DCAA5;width:100%;border-radius:2px"></div><span style="font-size:10px;color:var(--color-text-secondary)">Wed</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="height:80%;background:#1D9E75;width:100%;border-radius:2px"></div><span style="font-size:10px;color:var(--color-text-secondary)">Thu</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="height:40%;background:#EF9F27;width:100%;border-radius:2px"></div><span style="font-size:10px;color:var(--color-text-secondary)">Fri</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATTENDANCE LOG -->
+  <div class="page" id="a-attendance">
+    <div class="page-header">
+      <div class="page-title">Attendance Log</div>
+      <div class="page-sub">All student check-in/out records</div>
+    </div>
+    <div class="card">
+      <div class="form-inline">
+        <div class="form-group"><label class="form-label">Filter by date</label><input class="form-input" type="date" value="2026-05-01" /></div>
+        <div class="form-group"><label class="form-label">Filter by meal</label>
+          <select class="form-input"><option>All Meals</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select>
+        </div>
+        <button class="btn btn-primary">Apply</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student</th><th>ID</th><th>Meal</th><th>Check In</th><th>Check Out</th><th>Status</th></tr></thead>
+          <tbody id="a-log-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENTS -->
+  <div class="page" id="a-students">
+    <div class="page-header">
+      <div class="page-title">Student Management</div>
+      <div class="page-sub">Add, edit, or remove student accounts</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="card-title" style="margin-bottom:0">All Students (42)</div>
+        <button class="btn btn-primary btn-sm" onclick="sendPrompt('Add a new student to the mess system')">+ Add Student ↗</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>ID</th><th>Department</th><th>Plan</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="a-students-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKERS -->
+  <div class="page" id="a-workers">
+    <div class="page-header">
+      <div class="page-title">Worker Management</div>
+      <div class="page-sub">Manage kitchen and mess staff</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <div class="card-title" style="margin-bottom:0">All Workers (6)</div>
+        <button class="btn btn-primary btn-sm" onclick="sendPrompt('Add a new worker to the mess system')">+ Add Worker ↗</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>ID</th><th>Role</th><th>Shift</th><th>Status</th></tr></thead>
+          <tbody id="a-workers-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU MANAGER -->
+  <div class="page" id="a-menu">
+    <div class="page-header">
+      <div class="page-title">Menu Manager</div>
+      <div class="page-sub">Set and update meal menus</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Edit Today's Menu</div>
+      <div class="form-group"><label class="form-label">Breakfast items (one per line)</label><textarea class="form-input" rows="3" style="resize:vertical">Paratha with Achar&#10;Halwa Puri&#10;Chai / Tea</textarea></div>
+      <div class="form-group"><label class="form-label">Lunch items (one per line)</label><textarea class="form-input" rows="3" style="resize:vertical">Chicken Karahi&#10;Daal Chawal&#10;Raita + Salad</textarea></div>
+      <div class="form-group"><label class="form-label">Dinner items (one per line)</label><textarea class="form-input" rows="3" style="resize:vertical">Beef Qorma&#10;Mixed Vegetable&#10;Kheer (dessert)</textarea></div>
+      <div style="display:flex;gap:10px"><button class="btn btn-primary">Save Menu</button><button class="btn">Reset</button></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page" id="a-settings">
+    <div class="page-header">
+      <div class="page-title">System Settings</div>
+      <div class="page-sub">Configure mess system preferences</div>
+    </div>
+    <div class="card" style="max-width:500px">
+      <div class="card-title">Meal Timings</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Breakfast start</label><input class="form-input" type="time" value="07:00" /></div>
+        <div class="form-group"><label class="form-label">Breakfast end</label><input class="form-input" type="time" value="09:00" /></div>
+        <div class="form-group"><label class="form-label">Lunch start</label><input class="form-input" type="time" value="12:00" /></div>
+        <div class="form-group"><label class="form-label">Lunch end</label><input class="form-input" type="time" value="14:00" /></div>
+        <div class="form-group"><label class="form-label">Dinner start</label><input class="form-input" type="time" value="19:00" /></div>
+        <div class="form-group"><label class="form-label">Dinner end</label><input class="form-input" type="time" value="21:00" /></div>
+      </div>
+      <button class="btn btn-primary">Save Settings</button>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+const USERS = {
+  student1:{role:'student',name:'Ali Raza',id:'S-001',initials:'AR'},
+  student2:{role:'student',name:'Sara Khan',id:'S-002',initials:'SK'},
+  worker1:{role:'worker',name:'Rafiq Shah',id:'W-001',initials:'RS'},
+  admin1:{role:'admin',name:'Dr. Imran',id:'A-001',initials:'DI'},
+};
+let currentUser=null,isIn=false;
+const avatarColors={student:'av-green',worker:'av-amber',admin:'av-blue'};
+
+const histData=[
+  {date:'May 1',meal:'Breakfast',cin:'7:12 AM',cout:'8:03 AM',dur:'51 min'},
+  {date:'Apr 30',meal:'Dinner',cin:'7:35 PM',cout:'8:10 PM',dur:'35 min'},
+  {date:'Apr 30',meal:'Lunch',cin:'12:20 PM',cout:'1:05 PM',dur:'45 min'},
+  {date:'Apr 30',meal:'Breakfast',cin:'7:08 AM',cout:'7:55 AM',dur:'47 min'},
+  {date:'Apr 29',meal:'Dinner',cin:'7:50 PM',cout:'8:30 PM',dur:'40 min'},
+];
+const logData=[
+  {name:'Ali Raza',id:'S-001',meal:'Breakfast',cin:'7:12 AM',cout:'8:03 AM',status:'out'},
+  {name:'Sara Khan',id:'S-002',meal:'Breakfast',cin:'7:18 AM',cout:'8:15 AM',status:'out'},
+  {name:'Hamid Shah',id:'S-003',meal:'Breakfast',cin:'7:22 AM',cout:'7:58 AM',status:'out'},
+  {name:'Nida Aziz',id:'S-004',meal:'Lunch',cin:'12:05 PM',cout:'12:55 PM',status:'out'},
+  {name:'Usman Ali',id:'S-005',meal:'Lunch',cin:'12:10 PM',cout:'—',status:'in'},
+  {name:'Fatima Rao',id:'S-006',meal:'Lunch',cin:'12:30 PM',cout:'—',status:'in'},
+];
+const studentsData=[
+  {name:'Ali Raza',id:'S-001',dept:'Computer Science',plan:'Full Month',active:true},
+  {name:'Sara Khan',id:'S-002',dept:'Electrical Eng.',plan:'Full Month',active:true},
+  {name:'Hamid Shah',id:'S-003',dept:'Civil Eng.',plan:'Lunch Only',active:true},
+  {name:'Nida Aziz',id:'S-004',dept:'Management',plan:'Full Month',active:false},
+  {name:'Usman Ali',id:'S-005',dept:'Computer Science',plan:'Full Month',active:true},
+];
+const workersData=[
+  {name:'Rafiq Shah',id:'W-001',role:'Head Cook',shift:'Morning',active:true},
+  {name:'Bashir Ahmed',id:'W-002',role:'Assistant Cook',shift:'Morning',active:true},
+  {name:'Khalid Nawaz',id:'W-003',role:'Cleaner',shift:'Evening',active:true},
+  {name:'Imtiaz Hussain',id:'W-004',role:'Server',shift:'Morning',active:false},
+];
+const inStudents=[
+  {name:'Usman Ali',id:'S-005',initials:'UA',bg:'av-green'},
+  {name:'Fatima Rao',id:'S-006',initials:'FR',bg:'av-blue'},
+  {name:'Adnan Butt',id:'S-007',initials:'AB',bg:'av-amber'},
+  {name:'Hina Malik',id:'S-008',initials:'HM',bg:'av-green'},
+  {name:'Tariq Iqbal',id:'S-009',initials:'TI',bg:'av-blue'},
+  {name:'Zara Jamil',id:'S-010',initials:'ZJ',bg:'av-green'},
+  {name:'Bilal Akram',id:'S-011',initials:'BA',bg:'av-amber'},
+];
+
+function selectRole(r,el){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  el.dataset.role=r;
+  el.closest('.login-card').dataset.selRole=r;
+}
+
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value.trim();
+  const err=document.getElementById('login-err');
+  const card=document.querySelector('.login-card');
+  const selRole=card.dataset.selRole;
+  if(!selRole){err.style.display='block';err.textContent='Please select a role first.';return;}
+  const usr=USERS[u];
+  if(!usr||p!=='1234'||usr.role!==selRole){err.style.display='block';err.textContent='Invalid credentials. Try: student1/worker1/admin1 + pass 1234';return;}
+  currentUser=usr;err.style.display='none';
+  initDashboard();
+}
+
+function initDashboard(){
+  const r=currentUser.role;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(r+'-screen').classList.add('active');
+
+  if(r==='student'){
+    document.getElementById('s-avatar').textContent=currentUser.initials;
+    document.getElementById('s-avatar').className='avatar '+avatarColors[r];
+    document.getElementById('s-username').textContent=currentUser.name;
+    document.getElementById('s-inout-name').textContent=currentUser.name;
+    document.getElementById('sp-avatar').textContent=currentUser.initials;
+    document.getElementById('sp-name').textContent=currentUser.name;
+    document.getElementById('sp-id').textContent=currentUser.id;
+    buildHistTable();
+  } else if(r==='worker'){
+    document.getElementById('w-avatar').textContent=currentUser.initials;
+    document.getElementById('w-username').textContent=currentUser.name;
+    buildWorkerGrid();
+  } else {
+    document.getElementById('a-avatar').textContent=currentUser.initials;
+    document.getElementById('a-username').textContent=currentUser.name;
+    buildAdminTables();
+  }
+}
+
+function buildHistTable(){
+  const b=document.getElementById('s-hist-body');
+  b.innerHTML=histData.map(r=>`<tr><td>${r.date}</td><td>${r.meal}</td><td>${r.cin}</td><td>${r.cout}</td><td>${r.dur}</td></tr>`).join('');
+}
+
+function buildWorkerGrid(){
+  const g=document.getElementById('w-student-grid');
+  g.innerHTML=inStudents.map(s=>`
+    <div class="student-tile in-mess">
+      <div class="stile-avatar ${s.bg}">${s.initials}</div>
+      <div class="stile-name">${s.name}</div>
+      <div class="stile-id">${s.id}</div>
+      <span class="badge badge-in">In Mess</span>
+    </div>`).join('');
+}
+
+function buildAdminTables(){
+  document.getElementById('a-log-body').innerHTML=logData.map(r=>`
+    <tr><td>${r.name}</td><td style="color:var(--color-text-secondary)">${r.id}</td><td>${r.meal}</td><td>${r.cin}</td><td>${r.cout}</td><td><span class="badge ${r.status==='in'?'badge-in':'badge-absent'}">${r.status==='in'?'In Mess':'Left'}</span></td></tr>`).join('');
+  document.getElementById('a-students-body').innerHTML=studentsData.map(s=>`
+    <tr><td style="font-weight:500">${s.name}</td><td style="color:var(--color-text-secondary)">${s.id}</td><td>${s.dept}</td><td>${s.plan}</td><td><span class="badge ${s.active?'badge-in':'badge-absent'}">${s.active?'Active':'Inactive'}</span></td><td><button class="btn btn-sm">Edit</button></td></tr>`).join('');
+  document.getElementById('a-workers-body').innerHTML=workersData.map(w=>`
+    <tr><td style="font-weight:500">${w.name}</td><td style="color:var(--color-text-secondary)">${w.id}</td><td>${w.role}</td><td>${w.shift}</td><td><span class="badge ${w.active?'badge-in':'badge-absent'}">${w.active?'Active':'Inactive'}</span></td></tr>`).join('');
+}
+
+function showPage(id,navEl){
+  const parent=navEl.closest('.sidebar');
+  parent.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  navEl.classList.add('active');
+  const content=navEl.closest('.layout').querySelector('.main-content');
+  content.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function toggleInOut(){
+  isIn=!isIn;
+  const badge=document.getElementById('s-status-badge');
+  const btn=document.getElementById('s-toggle-btn');
+  const timeEl=document.getElementById('s-inout-time');
+  const now=new Date().toLocaleTimeString('en-PK',{hour:'2-digit',minute:'2-digit'});
+  if(isIn){
+    badge.innerHTML='<span class="status-dot dot-in"></span> Currently In';
+    badge.className='status-badge status-in';
+    btn.textContent='Check Out of Mess';
+    btn.className='inout-toggle btn-checkout';
+    timeEl.textContent='Checked in at: '+now;
+  } else {
+    badge.innerHTML='<span class="status-dot dot-out"></span> Currently Out';
+    badge.className='status-badge status-out';
+    btn.textContent='Check In to Mess';
+    btn.className='inout-toggle btn-checkin';
+    timeEl.textContent='Checked out at: '+now;
+  }
+}
+
+function logout(){
+  currentUser=null;isIn=false;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('login-screen').classList.add('active');
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));
+  delete document.querySelector('.login-card').dataset.selRole;
+}
+</script>
