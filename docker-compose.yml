@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: mess-postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: mess_in_out_system
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data
+      - postgres-data:/var/lib/postgresql/data
+      # Initialize database with schema
+      - ./data.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mess-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Node.js Application Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mess-app
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:postgres123@postgres:5432/mess_in_out_system
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mess-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Named volumes for data persistence
+volumes:
+  postgres-data:
+    driver: local
+
+# Custom network for service communication
+networks:
+  mess-network:
+    driver: bridge
