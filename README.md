@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mess In/Out Management System
 
 A web-based meal attendance system for hostels, universities, and cafeteria mess facilities. It supports student IN/OUT marking, admin monitoring, worker management, feedback, reports, billing records, and role-based access.
@@ -107,3 +108,6 @@ http://localhost:3000
 ## Notes
 
 The seed data uses plain demo passwords so the project is easy to run for presentation. For real deployment, store bcrypt password hashes and update the login route to verify hashes.
+=======
+# DevOps-Project
+>>>>>>> 9facabeb2b22a5c5e9d4c18791842843c24defc3
