@@ -127,7 +127,7 @@ jobs:
       - name: Deploy to EC2
         run: |
           scp docker-compose.yml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/
-          scp Dockerfile ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/
+          scp dockerfile ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/
           scp -r src public package*.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/
 
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'ENDSSH'
