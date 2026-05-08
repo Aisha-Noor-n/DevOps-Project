@@ -45,6 +45,7 @@
 }
 
 /* ── Dark mode tokens ─────────────────────────────────── */
+/* When dark mode is active, these variables will override the light mode ones */
 [data-theme="dark"] {
   --bg:             #1a1a1a;
   --surface:        #242424;
