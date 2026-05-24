@@ -105,9 +105,13 @@ http://localhost:3000
 - Admin feedback review/resolution
 - Admin student and worker removal
 
+## Members
+Aisha-Noor-n
+HooriaDar
+aafeen
+
 ## Notes
 
 The seed data uses plain demo passwords so the project is easy to run for presentation. For real deployment, these would be stored as bcrypt password hashes and would update the login route to verify hashes.
 =======
-# DevOps-Project
 >>>>>>> 9facabeb2b22a5c5e9d4c18791842843c24defc3
